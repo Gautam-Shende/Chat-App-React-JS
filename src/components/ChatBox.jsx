@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FaUserAlt } from "react-icons/fa";
+import { FaUserAlt, FaPaperPlane } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa6";
-import { FaPaperPlane } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
 
 function ChatBox() {
   const [messages, setMessages] = useState([]);
@@ -12,7 +12,7 @@ function ChatBox() {
 
   // Scroll to the bottom of the chat when new messages are added
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth'});
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const sendMessage = async () => {
@@ -39,7 +39,7 @@ function ChatBox() {
         },
         {
           headers: {
-            'Authorization': `Bearer YOUR_API_KEY`, // Replace with your OpenAI API key
+            'Authorization': `Bearer YOUR_API_KEY`,
             'Content-Type': 'application/json',
           },
         }
@@ -62,76 +62,89 @@ function ChatBox() {
     }
   };
 
-  let icon1 = <FaUserAlt className='text-2xl'/>
-  let icon2 = <FaRobot className='text-3xl'/>
-   
+  const getCurrentTime = () => {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
-    <div className="bg-gradient-to-br from-gray-700 to-slate-700 
-    rounded-xl shadow-2xl p-6 w-5/6">
-      <div className="h-96 overflow-y-auto space-y-4 mb-4">
+    <div className="flex flex-col h-[90vh] max-h-[800px] w-full max-w-4xl mx-auto p-5 bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
+        <h1 className="text-xl font-bold flex items-center gap-2">
+          <FaRobot className="text-2xl" />
+          <span>AI Assistant</span>
+        </h1>
+      </div>
+
+      {/* Chat messages area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800">
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <FaRobot className="text-5xl mb-4 opacity-30" />
+            <p className="text-lg">How can I help you today?</p>
+          </div>
+        )}
+
         {messages.map((msg, index) => (
           <div
-          key={index}
-          className={`flex ${
-            msg.sender === 'user' ? 'justify-end' : 'justify-start'
-          }`}
-        >
-           
-          <div
-            className={`p-3 rounded-lg max-w-[70%] ${
-              msg.sender === 'user'
-                ? 'bg-gradient-to-br from-pink-400 to-pink-700 mr-3 font-bold' 
-                : 'bg-gray-800 text-white font-bold '
-            }`}
-            
+            key={index}
+            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <p className='mb-4 flex gap-2 items-center justify-between
-            '>{msg.sender === 'user' ? icon1 : icon2}
-              <p className='text-sm ml-3'>9:30 am</p>
-            </p>
-            {msg.text}
+            <div
+              className={`max-w-[90%] md:max-w-[80%] rounded-2xl p-4 ${msg.sender === 'user'
+                ? 'bg-blue-500 text-white rounded-br-none'
+                : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none shadow'
+                }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                {msg.sender === 'user' ? (
+                  <FaUserAlt className="text-sm" />
+                ) : (
+                  <FaRobot className="text-sm" />
+                )}
+                <span className="text-xs opacity-80">{getCurrentTime()}</span>
+              </div>
+              <div className="text-sm md:text-base">{msg.text}</div>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+
         {isLoading && (
           <div className="flex justify-start">
-            <div className="p-3 rounded-lg bg-indigo-100 text-indigo-900">
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-900 mr-2"></div>
-                Thinking...
+            <div className="max-w-[80%] bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl rounded-bl-none p-4 shadow">
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                <span>Thinking...</span>
               </div>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
-      <div className="flex items-center flex-wrap">
-        <input
-          type="text"
-          className="flex-grow p-2 border text-black font-semibold text-lg 
-          rounded-md
-           focus:outline-none focus:ring-2 "
-          placeholder="Type your message..."
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          disabled={isLoading}
-        />
-        <button
-          onClick={sendMessage}
-          className=" bg-white text-black px-4 py-2 font-bold text-xl ml-4
-          rounded-xl hover:bg-gradient-to-br from-yellow-300 to-orange-500 
-          transition-all duration-500 flex justify-center items-center gap-2
-           disabled:opacity-0 disabled:cursor-not-allowed shadow-md
-           "
-          disabled={isLoading}
-        >
-          Send <FaPaperPlane className='text-xl'/>
-        </button>
+
+      {/* Input area */}
+      <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            className="flex-grow p-3 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+            placeholder="Type your message..."
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            disabled={isLoading}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={isLoading || !userInput.trim()}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 flex items-center justify-center transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <IoSend className="text-lg" />
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 export default ChatBox;
-
