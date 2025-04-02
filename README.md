@@ -18,7 +18,6 @@ A modern, real-time chat application built with ReactJS, featuring sleek UI and 
 ## 🛠️ Technologies Used
 
 - ⚛️ ReactJS (Frontend)
-- 🔥 Firebase (Backend & Realtime Database) - *optional*
 - 💅 Styled Components / CSS Modules
 - 🚀 React Router for navigation
 - 📦 Redux / Context API for state management
